@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .label {
+    @apply flex gap-x-3 px-4 py-4 items-center cursor-pointer hover:bg-slate-200;
+  }
+}
