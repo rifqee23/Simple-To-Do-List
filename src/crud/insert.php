@@ -15,7 +15,7 @@ if(isset($_GET["submit"])) {
     $result = mysqli_query($conn, $sql);
 
     if($result) {
-        echo "New record created successfully";
+        header("Location: ./../../public/index.php");
     } else {
         echo "Error: " . $sql . "<br>" . mysqli_error($conn);
     }

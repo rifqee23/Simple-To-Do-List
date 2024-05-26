@@ -140,7 +140,56 @@ $result = mysqli_query($conn, $sql);
         </div>
         <!-- End Modal -->
 
-        
+        <!-- Modal Edit -->
+        <div
+          id="modalEdit"
+          class="absolute z-50 hidden w-full max-w-lg p-4 -translate-x-1/2 bg-blue-400 top-1/2 left-1/2 -translate-y-2/3"
+        >
+          <div class="justify-between label hover:bg-transparent">
+            <h1 class="text-2xl font-bold ps-4">To do</h1>
+
+            <i  class="text-2xl fa-solid fa-circle-xmark"></i>
+          </div>
+
+          <div class="ps-8">
+            <?php
+              
+              $query = "SELECT note FROM task";
+              $data = mysqli_query($conn, $query);
+
+              if(mysqli_num_rows($data) > 0) :
+                $d = mysqli_fetch_assoc($data);
+            ?>
+            <form action="./../src/crud/insert.php" method="post">
+
+
+              
+              <div class="mt-2">
+                <label class="block mb-1 font-semibold text-md" for="">
+                  Catatan</label
+                >
+
+                <textarea
+                  class="p-4 resize-none"
+                  name="catatan"
+                  id="catatan"
+                  cols="30"
+                  rows="10"
+                ><?php echo $d["note"] ?></textarea>
+              </div>
+
+              <button
+                class="px-4 py-1 mt-2 font-semibold text-white bg-green-400 rounded-full"
+                type="submit"
+                name="submit"
+              >
+                Add Task
+              </button>
+            </form>
+            <?php endif; ?>
+          </div>
+        </div>
+        <!-- Modal Edit End -->
 
         <div class="container mt-16">
           <div class="gap-4 label hover:bg-transparent">
@@ -160,17 +209,16 @@ $result = mysqli_query($conn, $sql);
             <?php if(mysqli_num_rows($result)) : ?>
             <?php while($row = mysqli_fetch_assoc($result)) : ?>
             <div class="relative w-full max-w-sm px-3 py-2 bg-blue-500 h-72">
-              <a
+              <input
                 class="absolute px-4 font-semibold rounded-lg text-slate-200 bg-emerald-400 left-4 top-4"
-                href="./../src/crud/delete.php?id=<?php echo $row["id"] ?>"
-              >
-              DONE
-              </a>
+                type="button"
+                value="DONE"
+              />
               <h1 class="py-2 font-bold text-center">
                 <?php echo $row["title"] ?>
               </h1>
               <div class="relative h-48 max-w-sm overflow-auto scrollbar">
-                <a href="update.php?id=<?php echo $row["id"] ?>" id="edit" class="w-full h-4 cursor-pointer">
+                <a href="#" id="edit" data-id="<?php echo $row["id"] ?>" class="w-full h-4 cursor-pointer">
                   <i  class="absolute cursor-pointer right-1 top-1 fa-solid fa-pencil"></i>
                 </a>
                 <p class="p-4 font-bold break-words rounded-lg bg-emerald-400">
@@ -192,6 +240,7 @@ $result = mysqli_query($conn, $sql);
       </main>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script>
       const list = document.getElementById("list");
       const chevron = document.getElementById("chevron");
@@ -236,8 +285,33 @@ $result = mysqli_query($conn, $sql);
         });
       })
 
-      
+      edit.forEach(edit => {
+        edit.addEventListener("click", () => {
+          event.preventDefault()
+          modalEdit.classList.remove("hidden");
+          overlay.classList.remove("hidden");
+        })
+      })
 
+      $(document).ready(function(){
+
+        $("#edit").click(function (e) {
+          e.preventDefault();
+
+          var user_id = $(this).data('id');
+
+          $.ajax({
+            method: "POST",
+            url: "../src/crud/update.php",
+            data: {id: user_id},
+            success: function (response) {
+              $.each(response, function(key, value){
+                $('#catatan').val(value['catatan']);
+              });
+            }
+          })
+        }) 
+      })
 
     </script>
   </body>
